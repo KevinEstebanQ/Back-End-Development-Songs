@@ -81,9 +81,23 @@ def create_song():
     if not data:
         return {"message": "No data provided"}, 400
     if db.songs.find_one({"id": data.get("id")}):
-        return {"message": "song with id: %s already exists" % data.get("id")}, 302
+        return {"message": "song with id: %s already present" % data.get("id")}, 302
     result: InsertOneResult = db.songs.insert_one(data)
     if result.acknowledged:
         return {"message": "song created successfully"}, 201
     else:
         return {"message": "Failed to create song"}, 500
+    
+@app.route('/song/<int:id>', methods=['PUT'])
+def update_song(id):
+    data = request.get_json()
+    if not data:
+        return {"message": "No data provided"}, 400
+    to_update = db.songs.find_one({"id":id})
+    if not to_update:
+        return {"message":"song not found"}, 404
+    result = db.songs.update_one({"id":id}, {"$set": data})
+    if result.modified_count == 0:
+        return {"message": "song found, but nothing updated"}, 200
+    if result.acknowledged:
+        return json_util.dumps(db.songs.find_one({"id":id})), 201
