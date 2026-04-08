@@ -61,3 +61,9 @@ def count():
     """Endpoint to get the count of songs in the database."""
     count = db.songs.count_documents({})
     return jsonify({"count": count})
+
+@app.route('/song', methods=['GET'])
+def songs():
+    """Endpoint to get all songs in the database."""
+    songs = list(db.songs.find({}))
+    return json_util.dumps(songs), 200
