@@ -67,3 +67,10 @@ def songs():
     """Endpoint to get all songs in the database."""
     songs = list(db.songs.find({}))
     return json_util.dumps(songs), 200
+
+@app.route('/song/<int:id>', methods=['GET'])
+def get_song_by_id(id):
+    song = db.songs.find_one({"id":id})
+    if not song:
+        return {"message": "song with id: %s not found" % id}, 404
+    return json_util.dumps(song), 200
