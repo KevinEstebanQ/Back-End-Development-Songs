@@ -74,3 +74,16 @@ def get_song_by_id(id):
     if not song:
         return {"message": "song with id: %s not found" % id}, 404
     return json_util.dumps(song), 200
+
+@app.route('/song', methods=['POST'])
+def create_song():
+    data = request.get_json()
+    if not data:
+        return {"message": "No data provided"}, 400
+    if db.songs.find_one({"id": data.get("id")}):
+        return {"message": "song with id: %s already exists" % data.get("id")}, 302
+    result: InsertOneResult = db.songs.insert_one(data)
+    if result.acknowledged:
+        return {"message": "song created successfully"}, 201
+    else:
+        return {"message": "Failed to create song"}, 500
