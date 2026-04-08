@@ -51,3 +51,13 @@ def parse_json(data):
 ######################################################################
 # INSERT CODE HERE
 ######################################################################
+@app.route('/health', methods=['GET'])
+def health():
+    """Health check endpoint."""
+    return jsonify({"status": "OK"})
+
+@app.route('/count', methods=['GET'])
+def count():
+    """Endpoint to get the count of songs in the database."""
+    count = db.songs.count_documents({})
+    return jsonify({"count": count})
